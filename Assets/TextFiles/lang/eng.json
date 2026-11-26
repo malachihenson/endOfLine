@@ -1,0 +1,22 @@
+{
+    "lines": [
+        {
+            "name": "test_001",
+            "text": "You've made it to the other side.",
+            "portrait": 0,
+            "speed": 0.02
+        },
+        {
+            "name": "test_002",
+            "text": "Congratulations!",
+            "portrait": 0,
+            "speed": 0.02
+        },
+        {
+            "name": "",
+            "text": "",
+            "portrait": 0,
+            "speed": 0.02
+        }
+    ]
+}
