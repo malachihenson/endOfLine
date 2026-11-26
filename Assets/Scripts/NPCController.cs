@@ -5,6 +5,7 @@ public class NPCController : MonoBehaviour
     [SerializeField] private DialogRenderer dr;
     [SerializeField] private PlayerInput pi;
     [SerializeField] private PlayerMove pm;
+    [SerializeField] private BattleManager bm;
     [SerializeField] private int id;
     [SerializeField] private int startingLine;
     [SerializeField] private int endingLine;
@@ -29,13 +30,13 @@ public class NPCController : MonoBehaviour
         currentLine = startingLine;
         CheckEvent();
         dr.RenderText(currentLine, false);
+        currentLine++;
     }
     public void Advance()
     {
         CheckEvent();
         if(currentLine < endingLine)
         {
-            currentLine++;
             if(currentLine == endingLine)
             {
                 dr.RenderText(currentLine, true);
@@ -43,6 +44,7 @@ public class NPCController : MonoBehaviour
             {
                 dr.RenderText(currentLine, false);
             }
+            currentLine++;
         } else
         {
             dr.ToggleBox(false);
@@ -52,15 +54,18 @@ public class NPCController : MonoBehaviour
     }
     private void CheckEvent()
     {
-        if(eventLines[currentEvent] == currentLine)
+        if(eventLines.Length > 0)
         {
-            switch(eventLineTypes[currentEvent])
+            if(eventLines[currentEvent] == currentLine)
             {
-                case 0:
-                    //battle
-                    break;
+                switch(eventLineTypes[currentEvent])
+                {
+                    case 0:
+                        bm.StartBattle();
+                        break;
+                }
+                currentEvent++;
             }
-            currentEvent++;
         }
     }
 }

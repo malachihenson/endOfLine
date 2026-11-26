@@ -49,8 +49,9 @@ public class PlayerMove : MonoBehaviour
         }
         playerRB.MovePosition(gameObject.transform.position + (realSpeed * Time.fixedDeltaTime * moveValue));
     }
-    public void Interact()
+    public void Interact(InputAction.CallbackContext InputContext)
     {
+        if(!InputContext.performed) return;
         switch(inRadius)
         {
             case 1:
@@ -73,7 +74,6 @@ public class PlayerMove : MonoBehaviour
     public void UpdateSettings()
     {
         autoSprint = sm.autoSprint;
-        Debug.Log(sm.autoSprint);
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
