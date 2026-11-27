@@ -2,13 +2,13 @@
     "lines": [
         {
             "name": "test_001",
-            "text": "You've made it to the other side.",
+            "text": "Welcome! You are about to experience a test of simulated hacking combat.\n(Press Enter to continue)",
             "portrait": 0,
             "speed": 0.02
         },
         {
             "name": "test_002",
-            "text": "Congratulations!",
+            "text": "Please enjoy!",
             "portrait": 0,
             "speed": 0.02
         },

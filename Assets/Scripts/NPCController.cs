@@ -12,12 +12,17 @@ public class NPCController : MonoBehaviour
     //note about events: they will always trigger before the text of their associated line
     [SerializeField] private int[] eventLines;
     [SerializeField] private int[] eventLineTypes;
+    [SerializeField] private GameObject tooltip;
     private int currentLine;
     private int currentEvent;
     private bool inBattle = false;
+    public bool hasTooltip;
     void Start()
     {
-        
+        if(hasTooltip)
+        {
+            tooltip.SetActive(false);
+        }
     }
     void Update()
     {
@@ -72,6 +77,19 @@ public class NPCController : MonoBehaviour
                         break;
                 }
                 currentEvent++;
+            }
+        }
+    }
+    public void ToggleTooltip(bool state)
+    {
+        if(hasTooltip)
+        {
+            if(state)
+            {
+                tooltip.SetActive(true);
+            } else
+            {
+                tooltip.SetActive(false);
             }
         }
     }

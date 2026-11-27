@@ -15,7 +15,6 @@ public class ButtonManager : MonoBehaviour
     }
     public void ResetAllButtons()
     {
-        Debug.LogWarning("Button Reset");
         for(int i=0; i<buttons.Length; i++)
         {
             buttons[i].sprite = unselected;

@@ -9,7 +9,7 @@ public class BrickSpawner : MonoBehaviour
     private int nextBrickType = 0;
     private float offset = 0;
     private GameObject brick;
-    private List<GameObject> bricks = new List<GameObject>();
+    public List<GameObject> bricks = new List<GameObject>();
     void Start()
     {
         

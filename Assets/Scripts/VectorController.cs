@@ -10,7 +10,7 @@ public class VectorController : MonoBehaviour
     [SerializeField] private bool flipped;
     [SerializeField] private GameObject vectorTrail;
     [SerializeField] private RectTransform rt;
-    //[SerializeField] private Rigidbody2D rb;
+    [SerializeField] private BrickSpawner bs;
     private int offset;
     private int pcs = 0;
     private List<GameObject> trails = new List<GameObject>();
@@ -54,7 +54,7 @@ public class VectorController : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D col)
     {
-        Debug.Log("boom");
+        bs.bricks.Remove(col.gameObject);
         Destroy(col.gameObject);
         if(flipped)
         {

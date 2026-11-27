@@ -43,8 +43,10 @@ public class BattleManager : MonoBehaviour
     public int tokenDifficulty = -1;
     private int tokens;
     private int startingTokenAmount = 5;
-    private int pushCost = 2;
-    private int buildCost = 2;
+    private int pushCost = 1;
+    private int buildCost = 1;
+    private int pushTimes = 0;
+    private int buildTimes = 0;
     private int AVSpeed = 5;
     private int DVSpeed = 8;
     private int clumpSize = 2;
@@ -53,7 +55,7 @@ public class BattleManager : MonoBehaviour
     private int currentChallenge = 0;
     private int prevChallengeID = -1;
     public int tokensEarned = 0;
-    private float pushLength = 3f;
+    private float pushLength = 2.5f;
     private float battleStartTime;
     private float battleEndTime;
     public float fullBattleTime;
@@ -139,8 +141,10 @@ public class BattleManager : MonoBehaviour
         UpdateCostText();
         challengesSolved = 0;
         //PLEASE REMOVE THIS LATER WHEN ENEMY JSON FILE IS ADDED
-        enemyName = "Banana";
+        enemyName = "PinchBot";
         battleStartTime = Time.time;
+        pushTimes = 0;
+        buildTimes = 0;
     }
     public void Push()
     {
@@ -148,6 +152,7 @@ public class BattleManager : MonoBehaviour
         {
             tokens -= pushCost;
             StartCoroutine(PushAttack());
+            StartCoroutine(IncreaseCost(0));
         }
         UpdateCostText();
     }
@@ -157,6 +162,7 @@ public class BattleManager : MonoBehaviour
         {
             tokens -= buildCost;
             defenseSpawner.SpawnBrick(1);
+            StartCoroutine(IncreaseCost(1));
         }
         UpdateCostText();
     }
@@ -344,5 +350,31 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(1.4f);
         globalFade.SetActive(false);
         pm.BattleReturn();
+    }
+    IEnumerator IncreaseCost(int type)
+    {
+        if(type == 0)
+        {
+            //e^x model
+            pushTimes++;
+            pushCost = (int)Math.Floor(Math.Exp(pushTimes));
+        } else
+        {
+            //idk what this model is but its complicated
+            buildTimes++;
+            buildCost = (int)Math.Floor(Math.Exp((buildTimes + 2) / 2));
+        }
+        UpdateCostText();
+        yield return new WaitForSeconds(5);
+        if(type == 0)
+        {
+            pushTimes--;
+            pushCost = (int)Math.Floor(Math.Exp(pushTimes));
+        } else
+        {
+            buildTimes--;
+            buildCost = (int)Math.Floor(Math.Exp((buildTimes + 2) / 2));
+        }
+        UpdateCostText();
     }
 }

@@ -10,6 +10,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private PlayerInput pi;
     [SerializeField] private SettingsManager sm;
+    [SerializeField] private Animator playerAnim;
     private InputAction moveAction;
     private InputAction sprintAction;
     private int inRadius = 0;
@@ -47,6 +48,26 @@ public class PlayerMove : MonoBehaviour
                 realSpeed = moveSpeed;
             }
         }
+        if(moveValue.x > 0)
+        {
+            playerAnim.SetInteger("WalkDir", 2);
+        }
+        if(moveValue.x < 0)
+        {
+            playerAnim.SetInteger("WalkDir", 4);
+        }
+        if(moveValue.y > 0)
+        {
+            playerAnim.SetInteger("WalkDir", 1);
+        }
+        if(moveValue.y < 0)
+        {
+            playerAnim.SetInteger("WalkDir", 3);
+        }
+        /*if(moveValue == new Vector3(0, 0, 0))
+        {
+            playerAnim.SetInteger("WalkDir", 0);
+        }*/
         playerRB.MovePosition(gameObject.transform.position + (realSpeed * Time.fixedDeltaTime * moveValue));
     }
     public void Interact(InputAction.CallbackContext InputContext)
@@ -82,10 +103,12 @@ public class PlayerMove : MonoBehaviour
         {
             inRadius = 1;
             currNPC = other.gameObject.GetComponent<NPCController>();
+            currNPC.ToggleTooltip(true);
         }
     }
     private void OnTriggerExit2D(Collider2D other)
     {
+        currNPC.ToggleTooltip(false);
         //maybe this could case errors in the future? check back here if problems with multiple collisions
         inRadius = 0;
     }
