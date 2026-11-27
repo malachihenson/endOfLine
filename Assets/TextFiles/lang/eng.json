@@ -18,5 +18,19 @@
             "portrait": 0,
             "speed": 0.02
         }
+    ],
+    "items": [
+        {
+            "name": "TestBanana",
+            "description": "A banana. For secret testing purposes.",
+            "type": 0,
+            "id": 0
+        },
+        {
+            "name": "TestBanana2",
+            "description": "A second banana. For even more secret testing purposes.",
+            "type": 1,
+            "id": 1
+        }
     ]
 }

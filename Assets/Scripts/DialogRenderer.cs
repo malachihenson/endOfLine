@@ -17,6 +17,7 @@ public class DialogRenderer : MonoBehaviour
     private int currentChar = 0;
     void Start()
     {
+        Debug.Log(langFiles[sm.language].text);
         JsonLines = JsonUtility.FromJson<TextLines>(langFiles[sm.language].text);
     }
     void Update()

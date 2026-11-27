@@ -74,6 +74,8 @@ public class NPCController : MonoBehaviour
                     case 0:
                         inBattle = true;
                         bm.StartBattle();
+                        pi.SwitchCurrentActionMap("UI");
+                        pm.context = 2;
                         break;
                 }
                 currentEvent++;

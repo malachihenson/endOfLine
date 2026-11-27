@@ -3,7 +3,6 @@ using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 using System;
-using Unity.VisualScripting;
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] private GameObject battleContainer;
