@@ -20,6 +20,9 @@ public class NumberSort : MonoBehaviour
     }
     public void GenerateChallenge()
     {
+        levelManagers[0].ResetAllButtons();
+        levelManagers[1].ResetAllButtons();
+        levelManagers[2].ResetAllButtons();
         numbers.Clear();
         order = 0;
         difficulty = bm.tokenDifficulty;

@@ -1,23 +1,18 @@
+using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class BrickSpawner : MonoBehaviour
 {
     [SerializeField] private GameObject brick1;
     [SerializeField] private GameObject brick2;
     [SerializeField] private bool flipped;
     private int nextBrickType = 0;
-    private int brickHeight;
     private float offset = 0;
     private GameObject brick;
+    private List<GameObject> bricks = new List<GameObject>();
     void Start()
     {
-        if(flipped)
-        {
-            brickHeight = -117;
-        } else
-        {
-            brickHeight = 117;
-        }
+        
     }
     void Update()
     {
@@ -28,6 +23,10 @@ public class BrickSpawner : MonoBehaviour
         //animate this using invokerepeating eventually
         for(int i=0; i<times; i++)
         {
+            for(int j=0; j<bricks.Count; j++)
+            {
+                bricks[j].GetComponent<BrickController>().MoveUp(flipped);
+            }
             if(nextBrickType == 0)
             {
                 brick = Instantiate(brick1, Vector3.zero, transform.rotation);
@@ -39,14 +38,22 @@ public class BrickSpawner : MonoBehaviour
             }
             brick.transform.parent = this.transform;
             brick.transform.localScale = Vector3.one;
-            brick.transform.position = this.transform.position + new Vector3(0, (brickHeight * 2) - offset, 0);
             if(flipped)
             {
-                offset -= 15f;
+                brick.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, 101, 0);
             } else
             {
-                offset += 15f;
+                brick.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, -101, 0);
             }
+            bricks.Add(brick);
         }
+    }
+    public void EndGame()
+    {
+        for(int i=0; i<bricks.Count; i++)
+        {
+            Destroy(bricks[i]);
+        }
+        bricks.Clear();
     }
 }

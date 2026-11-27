@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class VectorController : MonoBehaviour
@@ -8,18 +9,14 @@ public class VectorController : MonoBehaviour
     public int setback = 50;
     [SerializeField] private bool flipped;
     [SerializeField] private GameObject vectorTrail;
+    [SerializeField] private RectTransform rt;
     //[SerializeField] private Rigidbody2D rb;
     private int offset;
     private int pcs = 0;
+    private List<GameObject> trails = new List<GameObject>();
     void Start()
     {
-        if(flipped)
-        {
-            offset = 14;
-        } else
-        {
-            offset = -14;
-        }
+        
     }
     void Update()
     {
@@ -29,29 +26,26 @@ public class VectorController : MonoBehaviour
             transform.Translate(Vector3.up * approachSpeed * Time.deltaTime);
         }
     }
-    void FixedUpdate()
-    {
-        
-        
-    }
     public void BeginPath()
     {
+        offset = -7;
+        trails.Clear();
         moving = true;
-        InvokeRepeating("SpawnTrail", 2, 2.8f);
+        InvokeRepeating("SpawnTrail", 2, 5f);
+    }
+    public void EndPath()
+    {
+        CancelInvoke();
+        moving = false;
     }
     private void SpawnTrail()
     {
         var newTrail = Instantiate(vectorTrail, Vector3.zero, transform.localRotation);
         newTrail.transform.parent = this.transform;
         newTrail.transform.localScale = Vector3.one;
-        newTrail.transform.position = this.transform.position + new Vector3(0, offset, 0);
-        if(flipped)
-        {
-            offset += 14;
-        } else
-        {
-            offset -= 14;
-        }
+        newTrail.GetComponent<RectTransform>().anchoredPosition = new Vector3(0, offset, 0);
+        trails.Add(newTrail);
+        offset -= 7;
         if(pcs == 5)
         {
             CancelInvoke();
@@ -68,6 +62,13 @@ public class VectorController : MonoBehaviour
         } else
         {
             transform.position += Vector3.down * setback;
+        }
+    }
+    public void EndGame()
+    {
+        for(int i=0; i<trails.Count; i++)
+        {
+            Destroy(trails[i]);
         }
     }
 }

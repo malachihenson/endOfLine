@@ -18,4 +18,11 @@ public class DiffButtons : MonoBehaviour
             selected = buttonNum;
         }
     }
+    public void ResetButtons()
+    {
+        selected = -1;
+        buttons[0].sprite = unselectedSprites[0];
+        buttons[1].sprite = unselectedSprites[1];
+        buttons[2].sprite = unselectedSprites[2];
+    }
 }

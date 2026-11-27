@@ -22,6 +22,9 @@ public class LetterSort : MonoBehaviour
     }
     public void GenerateChallenge()
     {
+        levelManagers[0].ResetAllButtons();
+        levelManagers[1].ResetAllButtons();
+        levelManagers[2].ResetAllButtons();
         letters.Clear();
         order = 0;
         difficulty = bm.tokenDifficulty;

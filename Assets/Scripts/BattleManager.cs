@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 using TMPro;
 using System;
+using Unity.VisualScripting;
 public class BattleManager : MonoBehaviour
 {
     [SerializeField] private GameObject battleContainer;
@@ -17,7 +18,9 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private GameObject content;
     [SerializeField] private GameObject topBar;
     [SerializeField] private GameObject mainGame;
+    [SerializeField] private GameObject winBox;
     [SerializeField] private GameObject[] challenges;
+    [SerializeField] private GameObject globalFade;
     [SerializeField] private Transform attackVector;
     [SerializeField] private Transform defenseVector;
     [SerializeField] private VectorController AVController;
@@ -26,9 +29,19 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private BrickSpawner defenseSpawner;
     [SerializeField] private Button pushButton;
     [SerializeField] private Button buildButton;
+    [SerializeField] private Animator failShaker;
+    [SerializeField] private Animator enemyAnim;
+    [SerializeField] private Animator barLeft;
+    [SerializeField] private Animator barRight;
+    [SerializeField] private Animator endAnim;
+    [SerializeField] private WinManager wm;
+    [SerializeField] private PlayerMove pm;
+    [SerializeField] private DiffButtons db;
     private bool selectedDifficulty = false;
+    private bool gameOver = false;
     public int tokenDifficulty = -1;
-    private int tokens = 5;
+    private int tokens;
+    private int startingTokenAmount = 5;
     private int pushCost = 2;
     private int buildCost = 2;
     private int AVSpeed = 5;
@@ -38,27 +51,45 @@ public class BattleManager : MonoBehaviour
     private int challengeValue = 0;
     private int currentChallenge = 0;
     private int prevChallengeID = -1;
+    public int tokensEarned = 0;
     private float pushLength = 3f;
+    private float battleStartTime;
+    private float battleEndTime;
+    public float fullBattleTime;
+    public float challengesSolved;
     private double attackPercent = 0;
     private double defensePercent = 0;
+    public string enemyName;
     void Start()
     {
         battleContainer.SetActive(false);
-        startHint.SetActive(true);
-        content.SetActive(false);
-        topBar.SetActive(false);
-        for(int i=0; i<challenges.Length; i++)
-        {
-            challenges[i].SetActive(false);
-        }
-        
     }
     void Update()
     {
         attackPercent = Math.Round((attackVector.localPosition.y + 100) / 2);
         defensePercent = Math.Round(0 - ((defenseVector.localPosition.y - 100) / 2));
+        if(attackPercent > 100)
+        {
+            attackPercent = 100;
+            attackVector.localPosition = new Vector3(0, 100, 0);
+        }
+        if(defensePercent > 100)
+        {
+            defensePercent = 100;
+            defenseVector.localPosition = new Vector3(0, -100, 0);
+        }
         attackPercentText.text = attackPercent.ToString() + "%";
         defensePercentText.text = defensePercent.ToString() + "%";
+        if(attackVector.localPosition.y >= 100 && gameOver == false)
+        {
+            gameOver = true;
+            GameOver(1);
+        }
+        if(defenseVector.localPosition.y <= -100 && gameOver == false)
+        {
+            gameOver = true;
+            GameOver(0);
+        }
         if(tokens < pushCost && pushButton.enabled)
         {
             pushButton.enabled = false;
@@ -79,11 +110,35 @@ public class BattleManager : MonoBehaviour
     public void StartBattle()
     {
         //eventually animate intro, for now we will have intrusive popup
+        gameOver = false;
         battleContainer.SetActive(true);
         mainGame.SetActive(false);
-        attackSpawner.SpawnBrick(15);
-        defenseSpawner.SpawnBrick(15);
+        winBox.SetActive(false);
+        startHint.SetActive(true);
+        content.SetActive(false);
+        topBar.SetActive(false);
+        for(int i=0; i<challenges.Length; i++)
+        {
+            challenges[i].SetActive(false);
+        }
+        attackVector.localPosition = new Vector3(0, -100, 0);
+        defenseVector.localPosition = new Vector3(0, 100, 0);
+        attackSpawner.SpawnBrick(7);
+        defenseSpawner.SpawnBrick(7);
         StartCoroutine(StartAttack());
+        barLeft.ResetTrigger("Win");
+        barRight.ResetTrigger("Win");
+        endAnim.ResetTrigger("Win");
+        db.ResetButtons();
+        tokenDifficulty = -1;
+        selectedDifficulty = false;
+        tokensEarned = 0;
+        tokens = startingTokenAmount;
+        UpdateCostText();
+        challengesSolved = 0;
+        //PLEASE REMOVE THIS LATER WHEN ENEMY JSON FILE IS ADDED
+        enemyName = "Banana";
+        battleStartTime = Time.time;
     }
     public void Push()
     {
@@ -92,7 +147,7 @@ public class BattleManager : MonoBehaviour
             tokens -= pushCost;
             StartCoroutine(PushAttack());
         }
-        tokenCounter.text = tokens.ToString() + "¢";
+        UpdateCostText();
     }
     public void Build()
     {
@@ -101,7 +156,7 @@ public class BattleManager : MonoBehaviour
             tokens -= buildCost;
             defenseSpawner.SpawnBrick(1);
         }
-        tokenCounter.text = tokens.ToString() + "¢";
+        UpdateCostText();
     }
     public void SetDifficulty(int choice)
     {
@@ -189,8 +244,10 @@ public class BattleManager : MonoBehaviour
     public void WinChallenge()
     {
         tokens += challengeValue;
-        tokenCounter.text = tokens.ToString() + "¢";
+        tokensEarned += challengeValue;
+        UpdateCostText();
         clumpNum++;
+        challengesSolved++;
         if(clumpNum == clumpSize)
         {
             GenerateClump();
@@ -201,7 +258,7 @@ public class BattleManager : MonoBehaviour
     }
     public void FailChallenge()
     {
-        //shake effect
+        failShaker.SetTrigger("Shake");
     }
     IEnumerator StartAttack()
     {
@@ -212,15 +269,65 @@ public class BattleManager : MonoBehaviour
     }
     IEnumerator PushAttack()
     {
-        AVSpeed = AVSpeed * 3;
+        AVSpeed = AVSpeed * 2;
         SyncVectors();
         yield return new WaitForSeconds(pushLength);
-        AVSpeed = AVSpeed / 3;
+        AVSpeed = AVSpeed / 2;
         SyncVectors();
     }
     private void SyncVectors()
     {
         AVController.approachSpeed = AVSpeed;
         DVController.approachSpeed = DVSpeed;
+    }
+    public void GameOver(int state)
+    {
+        battleEndTime = Time.time;
+        fullBattleTime = battleEndTime - battleStartTime;
+        AVController.EndPath();
+        DVController.EndPath();
+        content.SetActive(false);
+        topBar.SetActive(false);
+        attackSpawner.EndGame();
+        defenseSpawner.EndGame();
+        AVController.EndGame();
+        DVController.EndGame();
+        if(state == 1)
+        {
+            enemyAnim.ResetTrigger("Defeat");
+            enemyAnim.SetTrigger("Defeat");
+            StartCoroutine(WinGame());
+        }
+    }
+    IEnumerator WinGame()
+    {
+        yield return new WaitForSeconds(3);
+        endAnim.SetTrigger("Win");
+        barLeft.SetTrigger("Win");
+        barRight.SetTrigger("Win");
+        yield return new WaitForSeconds(1.5f);
+        winBox.SetActive(true);
+        wm.StartWin();
+    }
+    private void UpdateCostText()
+    {
+        tokenCounter.text = tokens.ToString() + "¢";
+        pushText.text = "push();\n" + pushCost.ToString() + "¢";
+        buildText.text = "build();\n" + buildCost.ToString() + "¢";
+    }
+    public void AcceptWin()
+    {
+        globalFade.SetActive(true);
+        globalFade.GetComponent<Animator>().SetTrigger("Transition");
+        StartCoroutine("WinTransition");
+    }
+    IEnumerator WinTransition()
+    {
+        yield return new WaitForSeconds(0.6f);
+        battleContainer.SetActive(false);
+        mainGame.SetActive(true);
+        yield return new WaitForSeconds(1.4f);
+        globalFade.SetActive(false);
+        pm.BattleReturn();
     }
 }

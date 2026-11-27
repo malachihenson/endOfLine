@@ -14,9 +14,10 @@ public class NPCController : MonoBehaviour
     [SerializeField] private int[] eventLineTypes;
     private int currentLine;
     private int currentEvent;
+    private bool inBattle = false;
     void Start()
     {
-        currentEvent = 0;
+        
     }
     void Update()
     {
@@ -24,6 +25,8 @@ public class NPCController : MonoBehaviour
     }
     public void Activate()
     {
+        currentEvent = 0;
+        inBattle = false;
         pi.SwitchCurrentActionMap("UI");
         pm.context = 1;
         dr.ToggleBox(true);
@@ -48,7 +51,10 @@ public class NPCController : MonoBehaviour
         } else
         {
             dr.ToggleBox(false);
-            pi.SwitchCurrentActionMap("Player");
+            if(!inBattle)
+            {
+                pi.SwitchCurrentActionMap("Player");
+            }
             pm.context = 0;
         }
     }
@@ -61,6 +67,7 @@ public class NPCController : MonoBehaviour
                 switch(eventLineTypes[currentEvent])
                 {
                     case 0:
+                        inBattle = true;
                         bm.StartBattle();
                         break;
                 }

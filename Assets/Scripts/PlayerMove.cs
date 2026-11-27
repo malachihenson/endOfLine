@@ -89,4 +89,8 @@ public class PlayerMove : MonoBehaviour
         //maybe this could case errors in the future? check back here if problems with multiple collisions
         inRadius = 0;
     }
+    public void BattleReturn()
+    {
+        pi.SwitchCurrentActionMap("Player");
+    }
 }

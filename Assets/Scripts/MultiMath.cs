@@ -19,6 +19,7 @@ public class MultiMath : MonoBehaviour
     private char operChar;
     public void GenerateChallenge()
     {
+        btm.ResetAllButtons();
         difficulty = bm.tokenDifficulty;
         switch(difficulty)
         {
