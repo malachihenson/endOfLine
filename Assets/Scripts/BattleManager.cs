@@ -35,6 +35,7 @@ public class BattleManager : MonoBehaviour
     [SerializeField] private Animator barRight;
     [SerializeField] private Animator endAnim;
     [SerializeField] private WinManager wm;
+    [SerializeField] private LossManager lm;
     [SerializeField] private PlayerMove pm;
     [SerializeField] private DiffButtons db;
     private bool selectedDifficulty = false;
@@ -117,6 +118,7 @@ public class BattleManager : MonoBehaviour
         startHint.SetActive(true);
         content.SetActive(false);
         topBar.SetActive(false);
+        lm.gameObject.SetActive(false);
         for(int i=0; i<challenges.Length; i++)
         {
             challenges[i].SetActive(false);
@@ -297,6 +299,9 @@ public class BattleManager : MonoBehaviour
             enemyAnim.ResetTrigger("Defeat");
             enemyAnim.SetTrigger("Defeat");
             StartCoroutine(WinGame());
+        } else
+        {
+            StartCoroutine(LoseGame());
         }
     }
     IEnumerator WinGame()
@@ -308,6 +313,15 @@ public class BattleManager : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         winBox.SetActive(true);
         wm.StartWin();
+    }
+    IEnumerator LoseGame()
+    {
+        yield return new WaitForSeconds(1.5f);
+        lm.gameObject.SetActive(true);
+        lm.StartLoss();
+        yield return new WaitForSeconds(2);
+        battleContainer.SetActive(false);
+        mainGame.SetActive(true);
     }
     private void UpdateCostText()
     {
@@ -324,6 +338,7 @@ public class BattleManager : MonoBehaviour
     IEnumerator WinTransition()
     {
         yield return new WaitForSeconds(0.6f);
+        lm.gameObject.SetActive(false);
         battleContainer.SetActive(false);
         mainGame.SetActive(true);
         yield return new WaitForSeconds(1.4f);
