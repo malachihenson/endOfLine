@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerMove : MonoBehaviour
 {
     public int context = 0;
+    public int currentArea = 0;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Rigidbody2D playerRB;
     [SerializeField] private PlayerInput pi;

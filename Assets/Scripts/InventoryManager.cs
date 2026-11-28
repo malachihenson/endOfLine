@@ -22,7 +22,7 @@ public class InventoryManager : MonoBehaviour
     [SerializeField] private Sprite[] loadoutIcons;
     [SerializeField] private Image[] loadoutIconSlots;
     private bool invOpen = false;
-    private List<int> items = new List<int>();
+    public List<int> items = new List<int>();
     private Vector2[] gridPositions = {new Vector2(-25, 25), new Vector2(25, 25), new Vector2(-25, -25), new Vector2(-25, 25)};
     private InventoryItems allItems;
     private int invCount;
@@ -42,16 +42,14 @@ public class InventoryManager : MonoBehaviour
     private int prevItemType;
     void Start()
     {
-        for(int i=0; i<16; i++)
+        /*for(int i=0; i<16; i++)
         {
             items.Add(UnityEngine.Random.Range(0, 2));
-        }
+        }*/
         invContainer.SetActive(false);
         loadoutContainer.SetActive(false);
         //eventually pull items + loadout from save here
         allItems = JsonUtility.FromJson<InventoryItems>(langFiles[sm.language].text);
-        slot1 = slot2 = slot3 = slot4 = -1;
-        slotsTaken = 0;
     }
     void Update()
     {
@@ -70,6 +68,7 @@ public class InventoryManager : MonoBehaviour
             itemDesc.text = "";
             invOpen = true;
             UpdateList();
+            UpdateSlots();
             if(invCount > 0)
             {
                 invSelector.SetActive(true);
@@ -494,12 +493,14 @@ public class InventoryManager : MonoBehaviour
     }
     private void UpdateSlots()
     {
+        slotsTaken = 0;
         if(slot1 == -1)
         {
             loadoutIconSlots[0].sprite = loadoutIcons[0];
         } else
         {
             loadoutIconSlots[0].sprite = loadoutIcons[slot1 + 1];
+            slotsTaken++;
         }
         if(slot2 == -1)
         {
@@ -507,13 +508,15 @@ public class InventoryManager : MonoBehaviour
         } else
         {
             loadoutIconSlots[1].sprite = loadoutIcons[slot2 + 1];
+            slotsTaken++;
         }
         if(slot3 == -1)
         {
             loadoutIconSlots[2].sprite = loadoutIcons[0];
         } else
         {
-            loadoutIconSlots[2].sprite = loadoutIcons[slot2 + 1];
+            loadoutIconSlots[2].sprite = loadoutIcons[slot3 + 1];
+            slotsTaken++;
         }
         if(slot4 == -1)
         {
@@ -521,6 +524,7 @@ public class InventoryManager : MonoBehaviour
         } else
         {
             loadoutIconSlots[3].sprite = loadoutIcons[slot4 + 1];
+            slotsTaken++;
         }
     }
 }
