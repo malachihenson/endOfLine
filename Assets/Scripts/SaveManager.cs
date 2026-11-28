@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -6,10 +7,16 @@ public class SaveManager : MonoBehaviour
 {
     [SerializeField] private PlayerMove pm;
     [SerializeField] private InventoryManager im;
+    [SerializeField] private GameObject saveIcon;
+    //this will stay 0 unless I decide to add multiple save slots (currently not planned)
     private int thisSave = 0;
-    void Start()
+    void Awake()
     {
         LoadGame(0);
+    }
+    void Start()
+    {
+        saveIcon.SetActive(false);
         InvokeRepeating("AutoSave", 120, 120);
     }
     void Update()
@@ -47,6 +54,7 @@ public class SaveManager : MonoBehaviour
     }
     public void AutoSave()
     {
+        StartCoroutine(SaveAnim());
         SaveGame(thisSave);
     }
     public class SaveObject
@@ -59,5 +67,11 @@ public class SaveManager : MonoBehaviour
         public int slot2;
         public int slot3;
         public int slot4;
+    }
+    IEnumerator SaveAnim()
+    {
+        saveIcon.SetActive(true);
+        yield return new WaitForSeconds(3);
+        saveIcon.SetActive(false);
     }
 }
